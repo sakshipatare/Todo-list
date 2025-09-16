@@ -14,6 +14,12 @@ userRouter.post('/signin', (req, res, next) => {
     UserController.signIn(req, res, next);
 });
 
+// user.routes.js
+userRouter.post("/google-signin", (req, res, next) => {
+  UserController.googleSignIn(req, res, next);
+});
+
+
 // ✅ Email Verification Route
 userRouter.get('/verify/:token', async (req, res) => {
     const { token } = req.params;

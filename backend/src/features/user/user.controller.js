@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import userRepo from './user.repository.js';
 import bcrypt from 'bcrypt';
 import { sendVerificationEmail } from '../../utils/sendEmail.js';
+import { OAuth2Client } from "google-auth-library";
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export default class userController {
     constructor(){
@@ -80,4 +82,46 @@ export default class userController {
             return res.status(500).json({message: 'Error signing in user'});
         }
     }
+
+    googleSignIn = async (req, res) => {
+    try {
+      const { token } = req.body;
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+
+      const email = payload.email;
+      const name = payload.name;
+
+      // see if user exists
+      let user = await this.userRepo.getUserByEmail(email);
+      if (!user) {
+        // create a new user without password
+        user = await this.userRepo.signUp({
+          name,
+          email,
+          password: "google_oauth_dummy", // you can leave null but schema requires password
+          verified: true, // skip email verification
+        });
+        // get actual user doc
+        user = await this.userRepo.getUserByEmail(email);
+      }
+
+      // issue JWT for your app
+      const jwtToken = jwt.sign(
+        { email: user.email, id: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: "30d" }
+      );
+      // strip password
+      const { password, ...userWithoutPassword } = user._doc;
+
+      res.json({ token: jwtToken, user: userWithoutPassword });
+    } catch (err) {
+      console.error("Google Sign-In error:", err);
+      res.status(401).json({ message: "Invalid Google token" });
+    }
+  };
 }
