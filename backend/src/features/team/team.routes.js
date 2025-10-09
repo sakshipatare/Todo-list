@@ -12,4 +12,9 @@ teamRouter.post("/join", authMiddleware, (req, res) =>
   teamController.joinTeam(req, res)
 );
 
+teamRouter.get("/by-user/:userId", authMiddleware, (req, res) =>
+  teamController.getTeamByUser(req, res)
+);
+
+
 export default teamRouter;

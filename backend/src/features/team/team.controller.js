@@ -1,4 +1,6 @@
 import TeamRepo from "./team.repository.js";
+import { teamModel } from "./team.schema.js";
+// import { userModel } from "../user/user.schema.js";
 
 export default class TeamController {
   constructor() {
@@ -31,6 +33,23 @@ export default class TeamController {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Error joining team" });
+    }
+  }
+
+  async getTeamByUser(req, res) {
+    try {
+      const { userId } = req.params;
+      const team = await teamModel
+        .findOne({ members: userId })
+        .populate("admin", "name email")
+        .populate("members", "name email");
+
+      if (!team) return res.status(404).json({ message: "No team found" });
+
+      res.json(team);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error fetching team info" });
     }
   }
 }
