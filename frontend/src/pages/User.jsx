@@ -37,7 +37,7 @@ function User() {
 
   return (
     <div
-      className="flex justify-center items-center min-h-screen"
+      className="flex justify-center items-start min-h-screen w-full py-4 px-4"
       style={{ backgroundColor: "#f2f2f2" }}
     >
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">

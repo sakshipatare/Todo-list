@@ -49,16 +49,32 @@ export default class TaskController {
   };
 
   // GET /tasks/my?date=YYYY-MM-DD
-  getMyTasksByDate = async (req, res) => {
-    try {
-      const normalizedDate = toStartOfDayUTC(req.query.date);
-      const tasks = await this.taskRepo.getTasksByUserAndDate(req.user._id, normalizedDate);
-      res.status(200).json({ tasks });
-    } catch (err) {
-      console.error("getMyTasksByDate error:", err);
-      res.status(500).json({ message: "Error fetching tasks" });
-    }
-  };
+  // getMyTasksByDate = async (req, res) => {
+  //   try {
+  //     const normalizedDate = toStartOfDayUTC(req.query.date);
+  //     const tasks = await this.taskRepo.getTasksByUserAndDate(req.user._id, normalizedDate);
+  //     res.status(200).json({ tasks });
+  //   } catch (err) {
+  //     console.error("getMyTasksByDate error:", err);
+  //     res.status(500).json({ message: "Error fetching tasks" });
+  //   }
+  // };
+
+  // task.controller.js
+// Replace your current getMyTasksByDate
+    getMyTasksByDate = async (req, res) => {
+      try {
+        const userId = req.user._id;
+        const tasks = await this.taskRepo.getTasksByUser(userId);
+        res.status(200).json(tasks);
+      } catch (err) {
+        console.error("getMyTasksByDate error:", err);
+        res.status(500).json({ message: "Error fetching tasks" });
+      }
+    };
+
+
+
 
   // GET /tasks/team/:teamId?date=YYYY-MM-DD
   getTeamTasksByDate = async (req, res) => {

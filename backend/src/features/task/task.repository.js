@@ -10,6 +10,12 @@ export default class TaskRepo {
     return await taskModel.find({ userId, date }).sort({ createdAt: 1 });
   }
 
+  // task.repository.js
+  async getTasksByUser(userId) {
+    return await taskModel.find({ userId }).sort({ createdAt: 1 });
+  }
+
+
   async getTasksByTeamAndDate(teamId, date) {
     return await taskModel
       .find({ teamId, date })
