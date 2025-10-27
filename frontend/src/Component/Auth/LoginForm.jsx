@@ -35,7 +35,8 @@ export default function Login() {
                 //in local storage it is used for storing the data in browser so that we can use it even after refreshing the page or closing tab
                 localStorage.setItem("userData", JSON.stringify(data.user));
                 localStorage.setItem("token", data.token);
-
+                localStorage.setItem("userId", data.user?._id); // ✅ save userId for future API calls
+                
                 console.log(localStorage.getItem("userData"));
                 console.log(localStorage.getItem("token"));
 

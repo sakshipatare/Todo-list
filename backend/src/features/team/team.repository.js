@@ -6,8 +6,15 @@ export default class TeamRepo {
     return await newTeam.save();
   }
 
-  async findTeamById(id) {
-    return await teamModel.findById(id).populate("members");
+  // async findTeamById(id) {
+  //   return await teamModel.findById(id).populate("members");
+  // }
+
+  async findByUserId(userId) {
+    return await teamModel
+      .findOne({ members: userId }) // match if user is part of team
+      .populate("members")          // show member details
+      .populate("admin");           // show admin details
   }
 
   async addMember(teamId, userId) {

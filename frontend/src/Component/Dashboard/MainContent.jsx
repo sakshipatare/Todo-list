@@ -1,6 +1,7 @@
 // src/components/Dashboard/MainContent.jsx
 import { useEffect, useState } from "react";
 import User from "../../pages/User"; // ✅ Import at the top
+import TeamMembers from "../../pages/TeamMembers";
 
 export default function MainContent({ selected }) {
   const [tasks, setTasks] = useState([]);
@@ -84,7 +85,9 @@ export default function MainContent({ selected }) {
   return (
     <div className="flex-1 p-6 bg-gray-100 h-full overflow-y-auto">
       {selected === "User" ? (
-        <User /> // ✅ Imported instead of require
+        <User />
+      ) : selected === "Team Members" ? ( // ✅ Handle new sidebar option
+        <TeamMembers />
       ) : (
         <>
           <h1 className="text-2xl font-semibold mb-4">My Tasks</h1>

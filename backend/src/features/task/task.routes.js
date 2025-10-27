@@ -30,6 +30,6 @@ taskRouter.delete("/:id", authMiddleware, controller.deleteTask);
 //   TaskController.getTeamTasks(req, res);
 // });
 
-taskRouter.get("/team/:teamId", authMiddleware, controller.getTeamTasks);
+taskRouter.get("/team/:teamId/all", authMiddleware, controller.getTeamTasks);
 
 export default taskRouter;

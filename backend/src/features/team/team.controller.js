@@ -36,20 +36,36 @@ export default class TeamController {
     }
   }
 
+  // async getTeamByUser(req, res) {
+  //   try {
+  //     const { userId } = req.params;
+  //     const team = await teamModel
+  //       .findOne({ members: userId })
+  //       .populate("admin", "name email")
+  //       .populate("members", "name email");
+
+  //     if (!team) return res.status(404).json({ message: "No team found" });
+
+  //     res.json(team);
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.status(500).json({ message: "Error fetching team info" });
+  //   }
+  // }
+
   async getTeamByUser(req, res) {
     try {
       const { userId } = req.params;
-      const team = await teamModel
-        .findOne({ members: userId })
-        .populate("admin", "name email")
-        .populate("members", "name email");
+      const team = await this.teamRepo.findByUserId(userId); // ✅ use this.teamRepo
 
-      if (!team) return res.status(404).json({ message: "No team found" });
+      if (!team) {
+        return res.status(404).json({ message: "No team found for this user" });
+      }
 
-      res.json(team);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Error fetching team info" });
+      res.status(200).json(team);
+    } catch (error) {
+      console.error("Error fetching team:", error);
+      res.status(500).json({ message: "Server error" });
     }
   }
 }
