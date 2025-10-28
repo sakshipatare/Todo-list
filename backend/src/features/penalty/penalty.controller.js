@@ -1,3 +1,4 @@
+// penalty.controller.js
 import { taskModel } from "../task/task.schema.js";
 import { teamModel } from "../team/team.schema.js";
 import PenaltyRepo from "./penalty.repository.js";
@@ -7,33 +8,44 @@ export default class PenaltyController {
     this.penaltyRepo = new PenaltyRepo();
   }
 
-  // Run daily penalty job
+  // ✅ Run daily penalty job (called by cron)
   runDailyPenaltyJob = async () => {
-  // Get all incomplete tasks up to today
-  const incompleteTasks = await taskModel.find({ isCompleted: false, date: { $lte: new Date() } });
-
-  for (const task of incompleteTasks) {
-    const team = await teamModel.findById(task.teamId);
-    if (!team) continue;
-
     try {
-      await this.penaltyRepo.create({
-        userId: task.userId,
-        teamId: task.teamId,
-        taskId: task._id,
-        penaltyAmount: team.penaltyPerMissedTask || 0, // fallback if undefined
-        date: task.date,
+      console.log("🚀 Running daily penalty check...");
+
+      // Get all incomplete tasks up to today
+      const incompleteTasks = await taskModel.find({
+        isCompleted: false,
+        date: { $lte: new Date() },
       });
+
+      let count = 0;
+
+      for (const task of incompleteTasks) {
+        const team = await teamModel.findById(task.teamId);
+        if (!team) continue;
+
+        try {
+          await this.penaltyRepo.create({
+            userId: task.userId,
+            teamId: task.teamId,
+            taskId: task._id,
+            penaltyAmount: team.penaltyPerMissedTask || 0,
+            date: task.date,
+          });
+          count++;
+        } catch (err) {
+          if (err.code === 11000) continue; // duplicate entry
+        }
+      }
+
+      console.log(`✅ Daily penalty job completed. Total penalties created: ${count}`);
     } catch (err) {
-      if (err.code === 11000) continue; // skip duplicates
+      console.error("❌ Error running daily penalty job:", err);
     }
-  }
+  };
 
-  console.log("Daily penalty job completed. Total penalties:", incompleteTasks.length);
-};
-
-
-  // GET /penalties/:userId
+  // ✅ Get user penalties
   getUserPenalties = async (req, res) => {
     try {
       const { userId } = req.params;
@@ -45,7 +57,7 @@ export default class PenaltyController {
     }
   };
 
-  // GET /penalties/team/:teamId
+  // ✅ Get all penalties for a team
   getTeamPenalties = async (req, res) => {
     try {
       const { teamId } = req.params;
@@ -57,7 +69,7 @@ export default class PenaltyController {
     }
   };
 
-  // GET /penalties/:userId/monthly?month=9&year=2025
+  // ✅ Monthly summary for a user
   getMonthlySummary = async (req, res) => {
     try {
       const { userId } = req.params;

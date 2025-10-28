@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import User from "../../pages/User"; // ✅ Import at the top
 import TeamMembers from "../../pages/TeamMembers";
+import TeamPenaltyPage from "../../pages/TeamPenaltyPage";
 
 export default function MainContent({ selected }) {
   const [tasks, setTasks] = useState([]);
@@ -86,9 +87,12 @@ export default function MainContent({ selected }) {
     <div className="flex-1 p-6 bg-gray-100 h-full overflow-y-auto">
       {selected === "User" ? (
         <User />
-      ) : selected === "Team Members" ? ( // ✅ Handle new sidebar option
+      ) : selected === "Team Members" ? (
         <TeamMembers />
+      ) : selected === "Penalty" ? ( // ✅ Add this
+        <TeamPenaltyPage />
       ) : (
+
         <>
           <h1 className="text-2xl font-semibold mb-4">My Tasks</h1>
 
